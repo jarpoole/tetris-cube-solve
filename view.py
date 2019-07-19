@@ -14,7 +14,7 @@ def explode(data):
     return data_e
 
 # build up the numpy logo
-n_voxels = np.zeros((4, 4, 4), dtype=bool)
+n_voxels = np.zeros((4, 4, 4), dtype=bool)  #note that n_voxels is not a python list. It is a special NumPy object that supports multidimensional slicing
 n_voxels[0, 0, :] = True
 n_voxels[-1, 0, :] = True
 n_voxels[1, 0, 2] = True
@@ -31,12 +31,12 @@ filled = np.ones(n_voxels.shape)
 # Shrink the gaps
 #x, y, z = np.indices(np.array(filled_2.shape) + 1).astype(float) // 2
 x, y, z = np.indices(np.array(filled.shape) + 1).astype(float) // 2
-##x[0::2, :, :] += 0.05
-##y[:, 0::2, :] += 0.05
-##z[:, :, 0::2] += 0.05
-##x[1::2, :, :] += 0.95
-##y[:, 1::2, :] += 0.95
-##z[:, :, 1::2] += 0.95
+x[0::2, :, :] += 0.05
+y[:, 0::2, :] += 0.05
+z[:, :, 0::2] += 0.05
+x[1::2, :, :] += 0.95
+y[:, 1::2, :] += 0.95
+z[:, :, 1::2] += 0.95
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
