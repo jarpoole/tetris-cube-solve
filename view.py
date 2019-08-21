@@ -1,46 +1,54 @@
 #https://terbium.io/2017/12/matplotlib-3d/
 
+#To install:
+# python -m pip install -U pip
+# python -m pip install -U matplotlib
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 
-# This import registers the 3D projection, but is otherwise unused.
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
+from mpl_toolkits.mplot3d import Axes3D
 
-def explode(data):
-    size = np.array(data.shape)*2
-    data_e = np.zeros(size - 1, dtype=data.dtype)
-    data_e[::2, ::2, ::2] = data
-    return data_e
+fig = None
 
-# build up the numpy logo
-n_voxels = np.zeros((4, 4, 4), dtype=bool)  #note that n_voxels is not a python list. It is a special NumPy object that supports multidimensional slicing
-n_voxels[0, 0, :] = True
-n_voxels[-1, 0, :] = True
-n_voxels[1, 0, 2] = True
-n_voxels[2, 0, 1] = True
-facecolors = np.where(n_voxels, '#FFD65DC0', '#7A88CCC0')
-edgecolors = np.where(n_voxels, '#BFAB6E', '#7D84A6')
-filled = np.ones(n_voxels.shape)
+def make_ax(grid=False):
+    global fig
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("z")
+    ax.grid(grid)
+    return ax
 
-# upscale the above voxel image, leaving gaps
-#filled_2 = explode(filled)
-#fcolors_2 = explode(facecolors)
-#ecolors_2 = explode(edgecolors)
+def displayPieces(pieces):
+    finalVolume = np.array([[[0 for col in range(4)]for row in range(4)] for x in range(4)])
+    for piece in pieces:
+        finalVolume = finalVolume | piece.volume
 
-# Shrink the gaps
-#x, y, z = np.indices(np.array(filled_2.shape) + 1).astype(float) // 2
-x, y, z = np.indices(np.array(filled.shape) + 1).astype(float) // 2
-x[0::2, :, :] += 0.05
-y[:, 0::2, :] += 0.05
-z[:, :, 0::2] += 0.05
-x[1::2, :, :] += 0.95
-y[:, 1::2, :] += 0.95
-z[:, :, 1::2] += 0.95
+    colors = np.empty(finalVolume.shape, dtype=object)
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-#ax.voxels(x, y, z, filled_2, facecolors=fcolors_2, edgecolors=ecolors_2)
-ax.voxels(x, y, z, filled, facecolors=facecolors, edgecolors=edgecolors)
+    for piece in pieces:
+        for x in range(4):
+            for y in range(4):
+                for z in range(4):
+                    if piece.volume[x][y][z] == 1:
+                        colors[x,y,z] = piece.color
 
-plt.show()
+    mpl.rcParams['toolbar'] = 'None'
+    ax = make_ax(True)
+    
+    ax.voxels(finalVolume, facecolors=colors, edgecolors='black')
+    
+    plt.show()
+    return ax
+
+def displayArray(volume):
+    mpl.rcParams['toolbar'] = 'None'
+    ax = make_ax(True)
+    color = np.where(volume, '#FFD65DC0', '#7A88CCC0')
+    ax.voxels(volume, facecolors=color, edgecolors='black')
+    
+    plt.show()

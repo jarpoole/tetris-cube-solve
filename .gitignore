@@ -1,0 +1,3 @@
+*.txt
+./obj
+./__pycache__
