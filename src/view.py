@@ -16,7 +16,7 @@ fig = None
 def make_ax(grid=False):
     global fig
     fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    ax = fig.add_subplot(projection='3d')
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_zlabel("z")

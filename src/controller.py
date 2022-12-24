@@ -1,4 +1,3 @@
-import numpy as np
 import queue
 import copy
 import datetime
@@ -217,9 +216,3 @@ class Controller:
 
         for solution in Controller.solutions:
             displayPieces(solution.piecesUsed)
-    
-###main   
-controller = Controller()
-controller.run()
-
-
